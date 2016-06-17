@@ -14,7 +14,6 @@ import com.github.scribejava.core.utils.Preconditions;
 
 public class WeiXinApi extends DefaultApi20 {
 
-    private static final String AUTHORIZE_URL = "https://open.weixin.qq.com/connect/qrconnect?appid=%s&redirect_uri=%s";
 
     protected WeiXinApi() {
     }
@@ -51,6 +50,6 @@ public class WeiXinApi extends DefaultApi20 {
 	@Override
 	protected String getAuthorizationBaseUrl() {
 		// TODO Auto-generated method stub
-		return "https://graph.qq.com/oauth2.0/authorize";
+		return "https://open.weixin.qq.com/connect/qrconnect";
 	}
 }
