@@ -1,9 +1,11 @@
 package com.github.scribejava.apis.examples;
 
+import com.ning.http.client.AsyncHttpClientConfig;
 import java.util.Random;
 import java.util.Scanner;
-import com.github.scribejava.apis.GoogleApi20;
-import com.github.scribejava.core.builder.ServiceBuilderAsync;
+import java.util.concurrent.ExecutionException;
+import com.github.scribejava.apis.FacebookApi;
+import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.model.ForceTypeOfHttpRequest;
 import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.model.OAuthRequestAsync;
@@ -11,17 +13,14 @@ import com.github.scribejava.core.model.Response;
 import com.github.scribejava.core.model.ScribeJavaConfig;
 import com.github.scribejava.core.model.Verb;
 import com.github.scribejava.core.oauth.OAuth20Service;
-import com.ning.http.client.AsyncHttpClientConfig;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
+import java.io.IOException;
 
-public abstract class Google20AsyncExample {
+public abstract class FacebookAsyncNingExample {
 
-    private static final String NETWORK_NAME = "G+ Async";
-    private static final String PROTECTED_RESOURCE_URL = "https://www.googleapis.com/plus/v1/people/me";
+    private static final String NETWORK_NAME = "Facebook";
+    private static final String PROTECTED_RESOURCE_URL = "https://graph.facebook.com/v2.6/me";
 
-    public static void main(String... args) throws InterruptedException, ExecutionException {
+    public static void main(String... args) throws InterruptedException, ExecutionException, IOException {
         // Replace these with your client id and secret
         final String clientId = "your client id";
         final String clientSecret = "your client secret";
@@ -35,28 +34,22 @@ public abstract class Google20AsyncExample {
                 .setReadTimeout(1_000)
                 .build();
 
-        final OAuth20Service service = new ServiceBuilderAsync()
+        final OAuth20Service service = new ServiceBuilder()
                 .apiKey(clientId)
                 .apiSecret(clientSecret)
-                .scope("profile") // replace with desired scope
                 .state(secretState)
-                .callback("http://example.com/callback")
-                .asyncHttpClientConfig(clientConfig)
-                .build(GoogleApi20.instance());
+                .callback("http://www.example.com/oauth_callback/")
+                .asyncNingHttpClientConfig(clientConfig)
+                .build(FacebookApi.instance());
+
         final Scanner in = new Scanner(System.in, "UTF-8");
 
-        System.out.println("=== " + NETWORK_NAME + "'s OAuth Workflow ===");
+        System.out.println("=== " + NETWORK_NAME + "'s Async OAuth Workflow ===");
         System.out.println();
 
         // Obtain the Authorization URL
         System.out.println("Fetching the Authorization URL...");
-        //pass access_type=offline to get refresh token
-        //https://developers.google.com/identity/protocols/OAuth2WebServer#preparing-to-start-the-oauth-20-flow
-        final Map<String, String> additionalParams = new HashMap<>();
-        additionalParams.put("access_type", "offline");
-        //force to reget refresh token (if usera are asked not the first time)
-        additionalParams.put("prompt", "consent");
-        final String authorizationUrl = service.getAuthorizationUrl(additionalParams);
+        final String authorizationUrl = service.getAuthorizationUrl();
         System.out.println("Got the Authorization URL!");
         System.out.println("Now go and authorize ScribeJava here:");
         System.out.println(authorizationUrl);
@@ -79,44 +72,24 @@ public abstract class Google20AsyncExample {
 
         // Trade the Request Token and Verfier for the Access Token
         System.out.println("Trading the Request Token for an Access Token...");
-        OAuth2AccessToken accessToken = service.getAccessTokenAsync(code, null).get();
+        final OAuth2AccessToken accessToken = service.getAccessTokenAsync(code, null).get();
         System.out.println("Got the Access Token!");
-        System.out.println("(if your curious it looks like this: " + accessToken
-                + ", 'rawResponse'='" + accessToken.getRawResponse() + "')");
-
-        System.out.println("Refreshing the Access Token...");
-        accessToken = service.refreshAccessTokenAsync(accessToken.getRefreshToken(), null).get();
-        System.out.println("Refreshed the Access Token!");
         System.out.println("(if your curious it looks like this: " + accessToken
                 + ", 'rawResponse'='" + accessToken.getRawResponse() + "')");
         System.out.println();
 
         // Now let's go and ask for a protected resource!
         System.out.println("Now we're going to access a protected resource...");
-        while (true) {
-            System.out.println("Paste fieldnames to fetch (leave empty to get profile, 'exit' to stop example)");
-            System.out.print(">>");
-            final String query = in.nextLine();
-            System.out.println();
+        final OAuthRequestAsync request = new OAuthRequestAsync(Verb.GET, PROTECTED_RESOURCE_URL, service);
+        service.signRequest(accessToken, request);
+        final Response response = request.sendAsync(null).get();
+        System.out.println("Got it! Lets see what we found...");
+        System.out.println();
+        System.out.println(response.getCode());
+        System.out.println(response.getBody());
 
-            final String requestUrl;
-            if ("exit".equals(query)) {
-                break;
-            } else if (query == null || query.isEmpty()) {
-                requestUrl = PROTECTED_RESOURCE_URL;
-            } else {
-                requestUrl = PROTECTED_RESOURCE_URL + "?fields=" + query;
-            }
-
-            final OAuthRequestAsync request = new OAuthRequestAsync(Verb.GET, requestUrl, service);
-            service.signRequest(accessToken, request);
-            final Response response = request.sendAsync(null).get();
-            System.out.println();
-            System.out.println(response.getCode());
-            System.out.println(response.getBody());
-
-            System.out.println();
-        }
+        System.out.println();
+        System.out.println("Thats it man! Go and build something awesome with ScribeJava! :)");
         service.closeAsyncClient();
     }
 }

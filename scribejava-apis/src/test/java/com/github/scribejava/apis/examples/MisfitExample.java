@@ -1,53 +1,51 @@
 package com.github.scribejava.apis.examples;
 
-import java.util.Scanner;
+import com.github.scribejava.apis.MisfitApi;
 import com.github.scribejava.core.builder.ServiceBuilder;
-import com.github.scribejava.apis.LoveFilmApi;
-import com.github.scribejava.core.model.OAuth1AccessToken;
-import com.github.scribejava.core.model.OAuth1RequestToken;
+import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.model.OAuthRequest;
 import com.github.scribejava.core.model.Response;
 import com.github.scribejava.core.model.Verb;
-import com.github.scribejava.core.oauth.OAuth10aService;
+import com.github.scribejava.core.oauth.OAuth20Service;
+import java.io.IOException;
 
-public abstract class LoveFilmExample {
+import java.util.Scanner;
 
-    private static final String NETWORK_NAME = "LoveFilm";
-    private static final String PROTECTED_RESOURCE_URL = "https://api.lovefilm.com/users";
+public abstract class MisfitExample {
 
-    public static void main(String... args) {
+    private static final String NETWORK_NAME = "Misfit";
+    private static final String PROTECTED_RESOURCE_URL
+            = "https://api.misfitwearables.com/move/resource/v1/user/me/profile";
+
+    public static void main(String... args) throws IOException {
         // Replace these with your own api key and secret
-        final String apiKey = "your_key";
-        final String apiSecret = "your_secret";
-        final OAuth10aService service = new ServiceBuilder()
+        final String apiKey = "your client id";
+        final String apiSecret = "your client secret";
+        final OAuth20Service service = new ServiceBuilder()
                 .apiKey(apiKey)
                 .apiSecret(apiSecret)
-                .build(LoveFilmApi.instance());
+                .callback("http://example.com/callback/")
+                .scope("public,birthday,email,tracking,session,sleep")
+                .build(MisfitApi.instance());
         final Scanner in = new Scanner(System.in);
 
         System.out.println("=== " + NETWORK_NAME + "'s OAuth Workflow ===");
         System.out.println();
 
-        // Grab a request token.
-        System.out.println("Fetching request token.");
-        final OAuth1RequestToken requestToken = service.getRequestToken();
-        System.out.println("Got it ... ");
-        System.out.println(requestToken.getToken());
-
         // Obtain the Authorization URL
         System.out.println("Fetching the Authorization URL...");
-        final String authorizationUrl = service.getAuthorizationUrl(requestToken);
+        final String authorizationUrl = service.getAuthorizationUrl();
         System.out.println("Got the Authorization URL!");
         System.out.println("Now go and authorize ScribeJava here:");
         System.out.println(authorizationUrl);
         System.out.println("And paste the authorization code here");
         System.out.print(">>");
-        final String oauthVerifier = in.nextLine();
+        final String code = in.nextLine();
         System.out.println();
 
-        // Trade the Request Token and Verfier for the Access Token
+        // Trade the Request Token and Verifier for the Access Token
         System.out.println("Trading the Request Token for an Access Token...");
-        final OAuth1AccessToken accessToken = service.getAccessToken(requestToken, oauthVerifier);
+        final OAuth2AccessToken accessToken = service.getAccessToken(code);
         System.out.println("Got the Access Token!");
         System.out.println("(if your curious it looks like this: " + accessToken
                 + ", 'rawResponse'='" + accessToken.getRawResponse() + "')");
@@ -65,6 +63,5 @@ public abstract class LoveFilmExample {
 
         System.out.println();
         System.out.println("Thats it man! Go and build something awesome with ScribeJava! :)");
-
     }
 }

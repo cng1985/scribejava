@@ -3,7 +3,7 @@
     <groupId>com.github.scribejava</groupId>
     <artifactId>scribejava</artifactId>
     <packaging>pom</packaging>
-    <version>2.5.6-SNAPSHOT</version>
+    <version>2.7.4-SNAPSHOT</version>
     <name>ScribeJava OAuth Library</name>
     <description>The best OAuth library out there</description>
     <url>https://github.com/scribejava/scribejava</url>
@@ -99,6 +99,12 @@
             <version>1.9.38</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.asynchttpclient</groupId>
+            <artifactId>async-http-client</artifactId>
+            <version>2.0.4</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
     <build>
         <pluginManagement>
@@ -120,7 +126,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>2.6</version>
+                    <version>3.0.0</version>
                     <configuration>
                         <archive>
                             <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
@@ -163,7 +169,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>2.7</version>
+                <version>3.0.0</version>
                 <configuration>
                     <encoding>UTF-8</encoding>
                 </configuration>
@@ -197,7 +203,33 @@
                     </execution>
                 </executions>
             </plugin>
-           
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>2.17</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.puppycrawl.tools</groupId>
+                        <artifactId>checkstyle</artifactId>
+                        <version>6.19</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <id>validate</id>
+                        <phase>validate</phase>
+                        <configuration>
+                            <sourceDirectory>${basedir}/src</sourceDirectory>
+                            <configLocation>checkstyle.xml</configLocation>
+                            <encoding>UTF-8</encoding>
+                            <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                        </configuration>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 

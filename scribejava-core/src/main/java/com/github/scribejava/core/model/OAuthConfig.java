@@ -13,31 +13,44 @@ public class OAuthConfig {
     private final String callback;
     private final SignatureType signatureType;
     private final String scope;
-    private final String grantType;
     private final OutputStream debugStream;
-    private final Integer connectTimeout;
-    private final Integer readTimeout;
     private final String state;
     private final String responseType;
+    private final String userAgent;
+
+    //sync only version
+    private final Integer connectTimeout;
+    private final Integer readTimeout;
+
+    //async version only
+    //ning 1.9
+    private com.ning.http.client.AsyncHttpClientConfig ningAsyncHttpClientConfig;
+    private String ningAsyncHttpProviderClassName;
+    //AHC 2.0
+    private org.asynchttpclient.AsyncHttpClientConfig ahcAsyncHttpClientConfig;
 
     public OAuthConfig(String key, String secret) {
-        this(key, secret, null, null, null, null, null, null, null, null, null);
+        this(key, secret, null, null, null, null, null, null, null, null, null, null, null, null);
     }
 
-    public OAuthConfig(String key, String secret, String callback, SignatureType type, String scope,
-            OutputStream stream, Integer connectTimeout, Integer readTimeout, String grantType, String state,
-            String responseType) {
-        this.apiKey = key;
-        this.apiSecret = secret;
+    public OAuthConfig(String apiKey, String apiSecret, String callback, SignatureType signatureType, String scope,
+            OutputStream debugStream, String state, String responseType, String userAgent, Integer connectTimeout,
+            Integer readTimeout, com.ning.http.client.AsyncHttpClientConfig ningAsyncHttpClientConfig,
+            String ningAsyncHttpProviderClassName, org.asynchttpclient.AsyncHttpClientConfig ahcAsyncHttpClientConfig) {
+        this.apiKey = apiKey;
+        this.apiSecret = apiSecret;
         this.callback = callback;
-        this.signatureType = type;
+        this.signatureType = signatureType;
         this.scope = scope;
-        this.debugStream = stream;
-        this.connectTimeout = connectTimeout;
-        this.readTimeout = readTimeout;
-        this.grantType = grantType;
+        this.debugStream = debugStream;
         this.state = state;
         this.responseType = responseType;
+        this.userAgent = userAgent;
+        this.connectTimeout = connectTimeout;
+        this.readTimeout = readTimeout;
+        this.ningAsyncHttpClientConfig = ningAsyncHttpClientConfig;
+        this.ningAsyncHttpProviderClassName = ningAsyncHttpProviderClassName;
+        this.ahcAsyncHttpClientConfig = ahcAsyncHttpClientConfig;
     }
 
     public String getApiKey() {
@@ -60,24 +73,16 @@ public class OAuthConfig {
         return scope;
     }
 
-    public boolean hasScope() {
-        return scope != null;
+    public String getState() {
+        return state;
     }
 
-    public String getGrantType() {
-        return grantType;
+    public String getResponseType() {
+        return responseType;
     }
 
-    public boolean hasGrantType() {
-        return grantType != null;
-    }
-
-    public Integer getConnectTimeout() {
-        return connectTimeout;
-    }
-
-    public Integer getReadTimeout() {
-        return readTimeout;
+    public String getUserAgent() {
+        return userAgent;
     }
 
     public void log(String message) {
@@ -91,11 +96,23 @@ public class OAuthConfig {
         }
     }
 
-    public String getState() {
-        return state;
+    public Integer getConnectTimeout() {
+        return connectTimeout;
     }
 
-    public String getResponseType() {
-        return responseType;
+    public Integer getReadTimeout() {
+        return readTimeout;
+    }
+
+    public com.ning.http.client.AsyncHttpClientConfig getNingAsyncHttpClientConfig() {
+        return ningAsyncHttpClientConfig;
+    }
+
+    public String getNingAsyncHttpProviderClassName() {
+        return ningAsyncHttpProviderClassName;
+    }
+
+    public org.asynchttpclient.AsyncHttpClientConfig getAhcAsyncHttpClientConfig() {
+        return ahcAsyncHttpClientConfig;
     }
 }

@@ -1,3 +1,31 @@
+[SNAPSHOT]
+ * add Salesforce API
+
+[2.7.3]
+ * FIX: ScribeJava shouldn't require all async http client provider to be on the classpath if using only one of them
+
+[2.7.2]
+ * FIX: ScribeJava shouldn't require any async http client provider to be on the classpath (neither ning neither AHC)
+
+[2.7.1]
+ * do not hide checked IOException in unchecked IllegalArgumentException
+
+[2.7.0]
+ * make http async client implementation be more pluggable
+ * add async-http-client 2.0 support (thanks to Sai Chandrasekharan https://github.com/saichand)
+ * add Misfit (http://misfit.com/) API
+ * implement async version getting Request Token for OAuth 1.0a
+
+[2.6.0]
+ * simplify async/sync usages
+ * add optional "User-Agent" config option to use while making http calls
+ * refactor usage of grant_type [authorization_code|refresh_token|password|etc]
+ * add Genius.com API authentication (OAuth2)
+ * fix GitHub API
+ * standardize authorization url generation for OAuth2
+ * update Facebook to v2.6
+ * cleanup: drop old APIs without Examples and with outdated domains
+
 [2.5.3]
  * fix - do not send two Content-Type header in async requests
  * improve OK example

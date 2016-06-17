@@ -4,11 +4,11 @@ import java.util.Scanner;
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.apis.OdnoklassnikiApi;
 import com.github.scribejava.core.model.OAuth2AccessToken;
-import com.github.scribejava.core.model.OAuthConstants;
 import com.github.scribejava.core.model.OAuthRequest;
 import com.github.scribejava.core.model.Response;
 import com.github.scribejava.core.model.Verb;
 import com.github.scribejava.core.oauth.OAuth20Service;
+import java.io.IOException;
 
 public abstract class OdnoklassnikiExample {
 
@@ -16,7 +16,7 @@ public abstract class OdnoklassnikiExample {
     private static final String PROTECTED_RESOURCE_URL
             = "https://api.ok.ru/api/users/getCurrentUser?application_key=%1$s&format=JSON";
 
-    public static void main(String... args) {
+    public static void main(String... args) throws IOException {
         // Replace these with your client id and secret
         final String clientId  = "your api client id";
         final String publicKey = "your api public key";
@@ -25,7 +25,6 @@ public abstract class OdnoklassnikiExample {
         final OAuth20Service service = new ServiceBuilder()
                 .apiKey(clientId)
                 .apiSecret(secretKey)
-                .grantType(OAuthConstants.AUTHORIZATION_CODE)
                 .callback("http://your.site.com/callback")
                 .build(OdnoklassnikiApi.instance());
 
