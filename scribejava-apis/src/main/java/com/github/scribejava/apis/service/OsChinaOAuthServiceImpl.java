@@ -15,9 +15,9 @@ public class OsChinaOAuthServiceImpl extends OAuth20Service {
     @Override
     protected <T extends AbstractRequest> T createAccessTokenRequest(String code, T request) {
         super.createAccessTokenRequest(code, request);
-        if (!getConfig().hasGrantType()) {
-            request.addParameter(OAuthConstants.GRANT_TYPE, OAuthConstants.AUTHORIZATION_CODE);
-        }
+//        if (!getConfig().hasGrantType()) {
+//            request.addParameter(OAuthConstants.GRANT_TYPE, OAuthConstants.AUTHORIZATION_CODE);
+//        }
         request.addParameter("dataType", "json");
         return request;
     }
