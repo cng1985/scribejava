@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Welcome to the home of ScribeJava, the simple OAuth Java lib!
 
 # Why use ScribeJava?
